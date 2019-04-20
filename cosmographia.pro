@@ -527,7 +527,7 @@ HEADERS = \
 
 RESOURCES = resources/icons.qrc
 
-INCLUDEPATH += thirdparty/glew thirdparty/curveplot thirdparty
+INCLUDEPATH += thirdparty/glew thirdparty/curveplot thirdparty/eigen thirdparty
 
 #CONFIG += ffmpeg
 #CONFIG += nomenu
