@@ -79,7 +79,7 @@ MeshGeometry::render(RenderContext& rc,
             if (boundVertexBuffer)
             {
                 boundVertexBuffer->unbind();
-                boundVertexBuffer = false;
+                boundVertexBuffer = NULL;
             }
             rc.bindVertexArray(submesh.vertices());
         }
@@ -149,7 +149,7 @@ MeshGeometry::renderShadow(RenderContext& rc,
             if (boundVertexBuffer)
             {
                 boundVertexBuffer->unbind();
-                boundVertexBuffer = false;
+                boundVertexBuffer = NULL;
             }
             rc.bindVertexArray(submesh.vertices());
         }
@@ -195,7 +195,7 @@ MeshGeometry::handleRayPick(const Eigen::Vector3d& pickOrigin,
                             double* distance) const
 {
     Vector3d meshScale = m_meshScale.cast<double>();
-    Matrix3d invScale = meshScale.cwise().inverse().asDiagonal();
+    Matrix3d invScale = meshScale.cwiseInverse().asDiagonal();
     Vector3d origin = invScale * pickOrigin;
     Vector3d direction = (invScale * pickDirection).normalized();
 
@@ -219,7 +219,7 @@ MeshGeometry::handleRayPick(const Eigen::Vector3d& pickOrigin,
 
     if (closestHit < numeric_limits<double>::infinity())
     {
-        *distance = (meshScale.cwise() * direction).norm() * closestHit;
+        *distance = (meshScale.cwiseProduct(direction)).norm() * closestHit;
         return true;
     }
     else

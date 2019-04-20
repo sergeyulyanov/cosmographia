@@ -61,7 +61,7 @@ AlignedEllipsoid::intersection(const Hyperplane<double, 3>& p, bool* foundInters
     //    4. Apply the inverse transformation to get the ellipse of intersection
 
     // Compute the transformation that maps the ellipsoid to a unit sphere
-    Matrix3d M = m_semiAxes.cwise().inverse().asDiagonal();
+    Matrix3d M = m_semiAxes.cwiseInverse().asDiagonal();
 
     Vector3d plane_origin, plane_v0, plane_v1;
     planeToSpanningVectors(p, plane_origin, plane_v0, plane_v1);
@@ -124,7 +124,7 @@ AlignedEllipsoid::intersection(const Hyperplane<double, 3>& p, bool* foundInters
         Vector3d v1 = v0.cross(n);
 
         // Transform the spanning vectors and center back to the original space
-        DiagonalMatrix<Vector3d> D = m_semiAxes.asDiagonal();
+        Matrix3d D = m_semiAxes.asDiagonal();
         Vector3d center = D * (n * p1.offset());
         v0              = D * (v0 * r);
         v1              = D * (v1 * r);
@@ -156,7 +156,7 @@ AlignedEllipsoid::limb(const Vector3d& p) const
     //    (L - P) dot N(L) = 0
     //
 
-    Vector3d n = m_semiAxes.cwise().square().cwise().inverse().asDiagonal() * p;
+    Vector3d n = m_semiAxes.cwiseAbs2().cwiseInverse().asDiagonal() * p;
     double mag = n.norm();
     Hyperplane<double, 3> limbPlane(n / mag, 1.0 / mag);
 
@@ -179,7 +179,7 @@ GeneralEllipse
 AlignedEllipsoid::orthogonalProjection(const Vector3d& planeNormal) const
 {
     // Compute the transformation that maps the ellipsoid to a unit sphere
-    Matrix3d M = m_semiAxes.cwise().inverse().asDiagonal();
+    Matrix3d M = m_semiAxes.cwiseInverse().asDiagonal();
 
     Hyperplane<double, 3> p(planeNormal, 0.0);
     Hyperplane<double, 3> p1 = p;
@@ -189,7 +189,7 @@ AlignedEllipsoid::orthogonalProjection(const Vector3d& planeNormal) const
     Vector3d plane_origin, plane_v0, plane_v1;
     planeToSpanningVectors(p1, plane_origin, plane_v0, plane_v1);
 
-    DiagonalMatrix<Vector3d> invM = m_semiAxes.asDiagonal();
+    Matrix3d invM = m_semiAxes.asDiagonal();
     plane_v0     = invM * (plane_v0);
     plane_v1     = invM * (plane_v1);
 
@@ -250,24 +250,24 @@ AlignedEllipsoid::nearestPoint(const Vector3d& v)
     const double maxErr = 1.0e-10;
     static const unsigned int maxIterations = 20;
 
-    const Vector3d invSemiAxes = m_semiAxes.cwise().inverse();
-    const Vector3d invSemiAxes2 = invSemiAxes.cwise().square();
-    const Vector3d semiAxes2 = m_semiAxes.cwise().square();
-    const Vector3d semiAxes4 = semiAxes2.cwise().square();
+    const Vector3d invSemiAxes = m_semiAxes.cwiseInverse();
+    const Vector3d invSemiAxes2 = invSemiAxes.cwiseAbs2();
+    const Vector3d semiAxes2 = m_semiAxes.cwiseAbs2();
+    const Vector3d semiAxes4 = semiAxes2.cwiseAbs2();
 
     // beta is scale factor that will produce the planetocentric surface
     // point for v, i.e. beta*v will lie on the surface of the ellipsoid.
     // This point, beta*v, is our initial guess for the nearest point on the
     // surface of the ellipsoid. In general, the guess in only the actual nearest
     // point in the special case of a sphere.
-    const double beta = 1.0 / (v.cwise() * invSemiAxes).norm();
+    const double beta = 1.0 / v.cwiseProduct(invSemiAxes).norm();
 
     // n is the unnormalized surface normal at the initial guess point
-    Vector3d n = beta * (v.cwise() * invSemiAxes2);
+    Vector3d n = beta * (v.cwiseProduct(invSemiAxes2));
     double nMag = n.norm();
     double vMag = v.norm();
 
-    Vector3d v2 = v.cwise().square();
+    Vector3d v2 = v.cwiseAbs2();
     Vector3d d(Vector3d::Zero());
 
     double alpha = (1.0 - beta) * (vMag / nMag);
@@ -281,14 +281,14 @@ AlignedEllipsoid::nearestPoint(const Vector3d& v)
         alpha -= (s / ds);
 
         d = Vector3d::Ones() + alpha * invSemiAxes2;
-        Vector3d d2 = d.cwise().square();
-        Vector3d d3 = d.cwise() * d2;
+        Vector3d d2 = d.cwiseAbs2();
+        Vector3d d3 = d.cwiseProduct(d2);
 
-        s = (v2.cwise() / (semiAxes2.cwise() * d2)).sum() - 1.0;
+        s = (v2.array() / (semiAxes2.array() * d2.array())).sum() - 1.0;
 
-        ds = -2.0 * (v2.cwise() / (semiAxes4.cwise() * d3)).sum();
+        ds = -2.0 * (v2.cwiseProduct(semiAxes4.cwiseProduct(d3).cwiseInverse())).sum();
     }
     while (abs(s) > maxErr && ++i < maxIterations);
 
-    return v.cwise() * d.cwise().inverse();
+    return v.cwiseProduct(d.cwiseInverse());
 }

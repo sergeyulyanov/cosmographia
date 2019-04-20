@@ -9,7 +9,7 @@
  */
 
 #include "GeneralEllipse.h"
-#include <Eigen/QR>
+#include <Eigen/Eigenvalues>
 #include <cmath>
 
 using namespace vesta;

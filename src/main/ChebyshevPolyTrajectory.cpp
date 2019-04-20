@@ -63,7 +63,7 @@ ChebyshevPolyTrajectory::ChebyshevPolyTrajectory(const double coeffs[],
         Vector3d ext = Vector3d::Zero();
         for (unsigned int i = 1; i <= degree; ++i)
         {
-            ext += Vector3d(granuleCoeffs[i * 3 + 0], granuleCoeffs[i * 3 + 1], granuleCoeffs[i * 3 + 2]).cwise().abs();
+            ext += Vector3d(granuleCoeffs[i * 3 + 0], granuleCoeffs[i * 3 + 1], granuleCoeffs[i * 3 + 2]).cwiseAbs();
         }
 
         m_boundingRadius = max(m_boundingRadius, (x0 + ext).norm());

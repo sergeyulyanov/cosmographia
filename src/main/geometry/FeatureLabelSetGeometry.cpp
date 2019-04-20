@@ -58,7 +58,7 @@ FeatureLabelSetGeometry::render(RenderContext& rc, double /* clock */) const
     if (rc.pass() == RenderContext::TranslucentPass)
     {
         // Get the position of the camera in the body-fixed frame of the labeled object
-        Transform3f inv = Transform3f(rc.modelview().inverse(Affine)); // Assuming an affine modelview matrix
+        Affine3f inv = Affine3f(rc.modelview().inverse(Affine)); // Assuming an affine modelview matrix
         Vector3f cameraPosition = inv.translation();
         float overallPixelSize = boundingSphereRadius() / (rc.pixelSize() * cameraPosition.norm());
 

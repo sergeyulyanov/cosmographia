@@ -58,7 +58,7 @@ public:
 
     Spectrum operator*(const Spectrum& other) const
     {
-        return Spectrum(this->m_samples.cwise() * other.m_samples);
+        return Spectrum(this->m_samples.cwiseProduct(other.m_samples));
     }
 
     Spectrum operator*(float f) const

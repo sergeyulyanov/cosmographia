@@ -48,9 +48,9 @@ Frame::stateTransform(double tsec) const
              -W.y(),  W.x(),    0.0;
 
     StateTransform T = Matrix<double, 6, 6>::Zero();
-    T.corner<3, 3>(TopLeft) = R;
-    T.corner<3, 3>(BottomRight) = R;
-    T.corner<3, 3>(BottomLeft) = Wstar * R;
+    T.topLeftCorner(3, 3) = R;
+    T.bottomRightCorner(3, 3) = R;
+    T.bottomLeftCorner(3, 3) = Wstar * R;
 
     return T;
 }
@@ -128,9 +128,9 @@ Frame::inverseStateTransform(double tsec) const
 
     StateTransform T = Matrix<double, 6, 6>::Zero();
 
-    T.corner<3, 3>(TopLeft) = Rinv;
-    T.corner<3, 3>(BottomRight) = Rinv;
-    T.corner<3, 3>(BottomLeft) = Rinv * Wstar;
+    T.topLeftCorner(3, 3) = Rinv;
+    T.bottomRightCorner(3, 3) = Rinv;
+    T.bottomLeftCorner(3, 3) = Rinv * Wstar;
 
     return T;
 }

@@ -95,7 +95,7 @@ TrajectoryGeometry::render(RenderContext& rc, double clock) const
 
     // Get a high precision modelview matrix; the full transformation is stored at single precision,
     // but the camera space position is stored at double precision.
-    Transform3d modelview = rc.modelview().cast<double>();
+    Affine3d modelview = rc.modelview().cast<double>();
     Vector3d t = rc.modelTranslation();
     modelview.matrix().col(3) = Vector4d(t.x(), t.y(), t.z(), 1.0);
 

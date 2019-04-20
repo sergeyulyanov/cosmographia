@@ -9,7 +9,7 @@
  */
 
 #include "Spectrum.h"
-#include <Eigen/Array>
+#include <Eigen/Core>
 #include <Eigen/LU>
 #include <cmath>
 
@@ -35,7 +35,7 @@ static Matrix3f SRGBtoXYZ = XYZtoSRGB.inverse();
 void
 Spectrum::normalize()
 {
-    float maxValue = m_samples.cwise().abs().maxCoeff();
+    float maxValue = m_samples.cwiseAbs().maxCoeff();
     if (maxValue > 0.0f)
     {
         m_samples /= maxValue;
@@ -50,7 +50,7 @@ Spectrum::normalize()
 Spectrum
 Spectrum::XYZtoLinearSRGB(const Spectrum& xyz)
 {
-    Vector3f srgb = XYZtoSRGB * xyz.m_samples.start<3>();
+    Vector3f srgb = XYZtoSRGB * xyz.m_samples.head<3>();
     return Spectrum(srgb.x(), srgb.y(), srgb.z());
 }
 
@@ -60,7 +60,7 @@ Spectrum::XYZtoLinearSRGB(const Spectrum& xyz)
 Spectrum
 Spectrum::LinearSRGBtoXYZ(const Spectrum& srgb)
 {
-    Vector3f xyz = SRGBtoXYZ * srgb.m_samples.start<3>();
+    Vector3f xyz = SRGBtoXYZ * srgb.m_samples.head<3>();
     return Spectrum(xyz.x(), xyz.y(), xyz.z());
 }
 

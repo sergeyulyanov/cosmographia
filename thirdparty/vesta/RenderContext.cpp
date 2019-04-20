@@ -357,7 +357,7 @@ RenderContext::identityModelView()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 #endif
-    m_matrixStack[m_modelViewStackDepth] = Transform3f::Identity();
+    m_matrixStack[m_modelViewStackDepth] = Affine3f::Identity();
 
     invalidateModelViewMatrix();
 }
@@ -381,7 +381,7 @@ RenderContext::rotateModelView(const Quaternionf& q)
 {
 #ifndef VESTA_OGLES2
     glMatrixMode(GL_MODELVIEW);
-    glMultMatrixf(Transform3f(q).data());
+    glMultMatrixf(Affine3f(q).data());
 #endif
     m_matrixStack[m_modelViewStackDepth] = m_matrixStack[m_modelViewStackDepth] * q;
 
@@ -396,7 +396,7 @@ RenderContext::scaleModelView(const Vector3f& v)
     glMatrixMode(GL_MODELVIEW);
     glScalef(v.x(), v.y(), v.z());
 #endif
-    m_matrixStack[m_modelViewStackDepth] = m_matrixStack[m_modelViewStackDepth] * Scaling3f(v);
+    m_matrixStack[m_modelViewStackDepth] = m_matrixStack[m_modelViewStackDepth] * Scaling(v);
 
     invalidateModelViewMatrix();
 }
@@ -921,7 +921,7 @@ RenderContext::setFixedFunctionMaterial(const Material* material)
         const Light& light = m_environment.m_lights[lightIndex];
 
         Vector4f lightPosition;
-        lightPosition.start<3>() = m_environment.m_lights[lightIndex].position;
+        lightPosition.head<3>() = m_environment.m_lights[lightIndex].position;
         glEnable(GL_LIGHT0 + lightIndex);
 
         // Currently assume that the first light source is at infinity (directional),
@@ -1184,7 +1184,7 @@ RenderContext::setShaderMaterial(const Material* material)
 
     // TODO: It might be more efficient to maintain the inverse modelview
     // matrix.
-    Matrix4f inverseModelView = modelview().inverse();
+    Affine3f inverseModelView = modelview().inverse();
 
     // Get the scale factor of this transformation; calculations that use this
     // value will only be approximately correct when there is anisotropic
@@ -1205,7 +1205,7 @@ RenderContext::setShaderMaterial(const Material* material)
 
         // Transform light positions into model space and pre-normalize
         // directional lights.
-        lightPositions[lightIndex] = Transform3f(inverseModelView) * light.position;
+        lightPositions[lightIndex] = inverseModelView * light.position;
         if (light.type == DirectionalLight)
         {
             directionalLightCount++;
@@ -1250,7 +1250,7 @@ RenderContext::setShaderMaterial(const Material* material)
 
     if (isViewDependent)
     {
-        Vector3f eyePosition = (inverseModelView * Vector4f::UnitW()).start<3>();
+        Vector3f eyePosition = (inverseModelView * Vector4f::UnitW()).head<3>();
 
         // Clamp the eyePosition to a distance of 100 times the scale factor. This prevents
         // precision related rendering errors at small fields of view. The visual result of
@@ -1303,7 +1303,7 @@ RenderContext::setShaderMaterial(const Material* material)
     if (shaderInfo.hasScattering())
     {
         Vector3f Br = m_environment.m_scattering.rayleighCoeff;
-        Vector3f scatterCoeffRatios = Vector3f::Constant(Br.x()).cwise() / Br;
+        Vector3f scatterCoeffRatios = Vector3f::Constant(Br.x()).cwiseProduct(Br.cwiseInverse());
 
         shader->setConstant("atmosphereRadius", m_environment.m_scattering.atmosphereRadius);
         shader->setConstant("planetRadius", m_environment.m_scattering.planetRadius);
@@ -1393,7 +1393,7 @@ RenderContext::updateShaderTransformConstants()
                 Matrix4f shadowMatrices[MaxLights];
                 for (unsigned int i = 0; i < m_environment.m_shadowMapCount; ++i)
                 {
-                    shadowMatrices[i] = m_environment.m_shadowMapMatrices[i] * modelview();
+                    shadowMatrices[i] = m_environment.m_shadowMapMatrices[i] * modelview().matrix();
                 }
                 m_currentShader->setConstantArray("shadowMatrix", shadowMatrices, m_environment.m_shadowMapCount);
             }
@@ -1403,7 +1403,7 @@ RenderContext::updateShaderTransformConstants()
                 Matrix4f shadowMatrices[MaxEclipseShadows];
                 for (unsigned int i = 0; i < m_environment.m_eclipseShadowCount; ++i)
                 {
-                    shadowMatrices[i] = m_environment.m_eclipseShadowMatrices[i] * modelview();
+                    shadowMatrices[i] = m_environment.m_eclipseShadowMatrices[i] * modelview().matrix();
                 }
                 m_currentShader->setConstantArray("eclipseShadowMatrix", shadowMatrices, m_environment.m_eclipseShadowCount);
                 m_currentShader->setConstantArray("eclipseShadowSlopes", m_environment.m_eclipseShadowSlopes, m_environment.m_eclipseShadowCount);
@@ -1414,7 +1414,7 @@ RenderContext::updateShaderTransformConstants()
                 Matrix4f shadowMatrices[MaxRingShadows];
                 for (unsigned int i = 0; i < m_environment.m_ringShadowCount; ++i)
                 {
-                    shadowMatrices[i] = m_environment.m_ringShadowMatrices[i] * modelview();
+                    shadowMatrices[i] = m_environment.m_ringShadowMatrices[i] * modelview().matrix();
                 }
                 m_currentShader->setConstantArray("ringShadowMatrix", shadowMatrices, m_environment.m_ringShadowCount);
                 m_currentShader->setConstantArray("ringShadowRadii", m_environment.m_ringShadowRadii, m_environment.m_ringShadowCount);

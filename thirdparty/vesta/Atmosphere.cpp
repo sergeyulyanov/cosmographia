@@ -17,7 +17,7 @@
 #include "internal/InputDataStream.h"
 #include "internal/OutputDataStream.h"
 #include "OGLHeaders.h"
-#include <Eigen/Array>
+#include <Eigen/Core>
 #include <cmath>
 
 #include <iostream>
@@ -372,7 +372,7 @@ static float opticalDepth(float r, float cosZenithAngle, float pathLength, float
     float a = sqrt(r * (0.5f / H));
 
     Vector2f b = a * Vector2f(cosZenithAngle, cosZenithAngle + pathLength / r);
-    Vector2f b2 = b.cwise().square();
+    Vector2f b2 = b.cwiseAbs2();
     Vector2f signB(sign(b.x()), sign(b.y()));
 
     float x = signB.y() > signB.x() ? exp(b2.x()) : 0.0f;
@@ -393,7 +393,7 @@ Atmosphere::transmittance(float r, float cosZenithAngle, float pathLength) const
     const Vector3f exR = m_rayleighScatteringCoeff * 1000.0f;
     const Vector3f exM = (Vector3f::Constant(m_mieScatteringCoeff) + m_absorptionCoeff) * 1000.0f;
 
-    return (-odMie * exM - odRayleigh * exR).cwise().exp();
+    return (-odMie * exM - odRayleigh * exR).array().exp();
 }
 
 
@@ -671,14 +671,14 @@ Atmosphere::computeInscatterTable(unsigned int heightSamples,
                     float d1 = opticalDepth(r, cosPsi, sunPathLength, m_rayleighScaleHeight, m_planetRadius);
                     float d2 = opticalDepth(r, cosPsi, sunPathLength, m_mieScaleHeight, m_planetRadius);
 
-                    Vector3f xmit = sunXmit.cwise() * viewXmit;
-                    inscatter.start<3>() += (exp(-s / m_rayleighScaleHeight) * stepLength) * xmit;
+                    Vector3f xmit = sunXmit.cwiseProduct(viewXmit);
+                    inscatter.head<3>() += (exp(-s / m_rayleighScaleHeight) * stepLength) * xmit;
                     inscatter.w() += exp(-s / m_mieScaleHeight) * stepLength * xmit.x();
 
                     p += step;
                 }
 
-                m_inscatterTable[(i * viewAngleSamples + j) * sunAngleSamples + k] = inscatter.cwise() * scatterFactors;
+                m_inscatterTable[(i * viewAngleSamples + j) * sunAngleSamples + k] = inscatter.cwiseProduct(scatterFactors);
             }
         }
     }

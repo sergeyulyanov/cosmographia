@@ -30,18 +30,18 @@ template<typename DERIVED1, typename DERIVED2, typename DERIVED3> bool
 TestRaySphereIntersection(const Eigen::MatrixBase<DERIVED1>& rayOrigin,
                           const Eigen::MatrixBase<DERIVED2>& rayDirection,
                           const Eigen::MatrixBase<DERIVED3>& sphereCenter,
-                          typename Eigen::ei_traits<DERIVED1>::Scalar sphereRadius,
-                          typename Eigen::ei_traits<DERIVED1>::Scalar * distance = 0)
+                          typename Eigen::MatrixBase<DERIVED1>::Scalar sphereRadius,
+                          typename Eigen::MatrixBase<DERIVED1>::Scalar * distance = 0)
 
 {
-    typedef typename Eigen::ei_traits<DERIVED1>::Scalar SCALAR;
+    typedef typename Eigen::MatrixBase<DERIVED1>::Scalar SCALAR;
     Eigen::Matrix<SCALAR, 3, 1> x = rayOrigin - sphereCenter;
     SCALAR xv = x.dot(rayDirection);
     SCALAR discriminant = xv * xv - x.dot(x) + sphereRadius * sphereRadius;
 
     if (discriminant > SCALAR(0))
     {
-        double d = Eigen::ei_sqrt(discriminant);
+        double d = sqrt(discriminant);
         double i1 = -xv - d;
         double i2 = -xv + d;
 
@@ -89,11 +89,11 @@ bool TestRayEllipsoidIntersection(const Eigen::MatrixBase<DERIVED1>& rayOrigin,
                                   const Eigen::MatrixBase<DERIVED3>& semiAxes,
                                   double* distance = 0)
 {
-    typedef typename Eigen::ei_traits<DERIVED1>::Scalar SCALAR;
-    Eigen::Matrix<SCALAR, 3, 1> A = semiAxes.cwise().inverse().cwise().square();
-    Eigen::Matrix<SCALAR, 3, 1> xx = rayOrigin.cwise().square();
-    Eigen::Matrix<SCALAR, 3, 1> xv = rayOrigin.cwise() * rayDirection;
-    Eigen::Matrix<SCALAR, 3, 1> vv = rayDirection.cwise().square();
+    typedef typename Eigen::MatrixBase<DERIVED1>::Scalar SCALAR;
+    Eigen::Matrix<SCALAR, 3, 1> A = semiAxes.cwiseInverse().cwiseAbs2();
+    Eigen::Matrix<SCALAR, 3, 1> xx = rayOrigin.cwiseAbs2();
+    Eigen::Matrix<SCALAR, 3, 1> xv = rayOrigin.cwiseProduct(rayDirection);
+    Eigen::Matrix<SCALAR, 3, 1> vv = rayDirection.cwiseAbs2();
     SCALAR a = vv.dot(A);
     SCALAR b = xv.dot(A);
     SCALAR c = xx.dot(A) - SCALAR(1);
@@ -101,7 +101,7 @@ bool TestRayEllipsoidIntersection(const Eigen::MatrixBase<DERIVED1>& rayOrigin,
 
     if (discriminant > SCALAR(0))
     {
-        double d = Eigen::ei_sqrt(discriminant);
+        double d = sqrt(discriminant);
         double i1 = (-b - d) / a;
         double i2 = (-b + d) / a;
 

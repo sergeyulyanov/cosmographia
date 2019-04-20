@@ -49,7 +49,7 @@ SkyLabelLayer::render(vesta::RenderContext& rc)
     rc.pushModelView();
     rc.rotateModelView(orientation.cast<float>());
 
-    Transform3f mvp = rc.projection() * rc.modelview();
+    Affine3f mvp = rc.projection() * rc.modelview();
 
     float fov = rc.pixelSize() * rc.viewportHeight();
 

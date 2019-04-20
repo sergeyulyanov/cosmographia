@@ -35,20 +35,20 @@ public:
 
     StateVector(const Eigen::Vector3d& position, const Eigen::Vector3d& velocity)
     {
-        m_state.start<3>() = position;
-        m_state.end<3>() = velocity;
+        m_state.head<3>() = position;
+        m_state.tail<3>() = velocity;
     }
 
     Vector6d state() const { return m_state; }
 
     Eigen::Vector3d position() const
     {
-        return m_state.start<3>();
+        return m_state.head<3>();
     }
 
     Eigen::Vector3d velocity() const
     {
-        return m_state.end<3>();
+        return m_state.tail<3>();
     }
 
     StateVector operator+(const StateVector& other)

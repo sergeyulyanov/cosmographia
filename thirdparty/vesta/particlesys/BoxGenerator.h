@@ -40,7 +40,7 @@ public:
     {
         // Generate a random points in the unit disc using the rejection method
         Eigen::Vector3f randVector(gen.randSignedFloat(), gen.randSignedFloat(), gen.randSignedFloat());
-        position = m_center + 0.5f * (randVector.cwise() * m_sideLengths);
+        position = m_center + 0.5f * (randVector.cwiseProduct(m_sideLengths));
         velocity = m_velocity;
     }
 

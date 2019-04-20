@@ -128,7 +128,7 @@ InterpolatedRotation::angularVelocity(double tdbSec) const
         // v(t) a unit direction vector.
 
         Quaterniond dq = t1.orientation * t0.orientation.conjugate();
-        const double one = 1.0 - machine_epsilon<double>();
+        const double one = 1.0 - NumTraits<double>::epsilon();
 
         if (abs(dq.w()) > one)
         {

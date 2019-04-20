@@ -235,8 +235,8 @@ StarGlobeGeometry::render(RenderContext& rc, double clock) const
         rc.enableCustomShader(ms_starShader.ptr());
         ms_starShader->bind();
 
-        Transform3f noiseTransform1(Transform3f::Identity());
-        Transform3f noiseTransform2(Transform3f::Identity());
+        Affine3f noiseTransform1(Affine3f::Identity());
+        Affine3f noiseTransform2(Affine3f::Identity());
 
         double t = clock * 0.0001;
         noiseTransform1.translate(Vector3f((float) (10.0 * sin(t * 1.1 + 3.4)),

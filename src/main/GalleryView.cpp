@@ -24,6 +24,7 @@
 #include <Eigen/Geometry>
 #include <cmath>
 #include <algorithm>
+#include <iostream>
 
 using namespace vesta;
 using namespace Eigen;
@@ -254,7 +255,7 @@ GalleryView::renderTile(const Viewport& viewport,
     glRotatef(-(toDegrees(theta) + 90.0f), 0.0f, 1.0f, 0.0f);
     glScalef(scaleFactor, scaleFactor, scaleFactor);
     */
-    Transform3f modelTransform = Translation3f(tilePos) * AngleAxisf(-(theta + PI / 2.0f), Vector3f::UnitY()) * Scaling3f(scaleFactor);
+    Affine3f modelTransform = Translation3f(tilePos) * AngleAxisf(-(theta + PI / 2.0f), Vector3f::UnitY()) * Scaling(scaleFactor);
     Matrix4f mv = viewMat * modelTransform.matrix();
     Matrix4f mvp = projectionMat * mv;
 
@@ -274,9 +275,9 @@ GalleryView::renderTile(const Viewport& viewport,
 #ifndef VESTA_OGLES2
     if (tile.hover > 0.0f)
     {
-        Transform3f projectionXform(projectionMat);
-        Transform3f cameraXform(Translation3f(Vector3f(0.0f, 0.0f, -centerOffset)));
-        Transform3f mvp = projectionXform * cameraXform;
+        Affine3f projectionXform(projectionMat);
+        Affine3f cameraXform(Translation3f(Vector3f(0.0f, 0.0f, -centerOffset)));
+        Affine3f mvp = projectionXform * cameraXform;
         Vector3f labelPos = tilePos + Vector3f(0.0f, -scaleFactor, 0.0f);
         Vector3f projPosition = mvp * labelPos;
         Vector2f screenPos((projPosition.x() * 0.5f + 0.5f) * viewport.width(),
@@ -293,7 +294,7 @@ GalleryView::renderTile(const Viewport& viewport,
         glTranslatef(0.125f, 0.125f, 0);
 #endif
         Matrix4f textProjectionMat = PlanarProjection::CreateOrthographic2D(0.0f, viewport.width(), 0.0f, viewport.height()).matrix();
-        Matrix4f modelViewMat = Transform3f(Translation3f(Vector3f(0.125f, 0.125f, 0.0f))).matrix();
+        Matrix4f modelViewMat = Affine3f(Translation3f(Vector3f(0.125f, 0.125f, 0.0f))).matrix();
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
         glLoadMatrixf(textProjectionMat.data());
@@ -341,7 +342,7 @@ GalleryView::render(const Viewport& viewport)
     }
 
     PlanarProjection projectionMat = PlanarProjection::CreatePerspective(m_cameraFov, viewport.aspectRatio(), 1.0f, 1000.0f);
-    Matrix4f viewMat = Transform3f(Translation3f(0.0f, 0.0f, -centerOffset)).matrix();
+    Matrix4f viewMat = Affine3f(Translation3f(0.0f, 0.0f, -centerOffset)).matrix();
 
 #ifndef VESTA_OGLES2
     glEnable(GL_TEXTURE_2D);

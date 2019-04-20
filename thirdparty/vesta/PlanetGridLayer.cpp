@@ -116,7 +116,7 @@ void
 PlanetGridLayer::renderTile(RenderContext& rc, const WorldGeometry* world, const QuadtreeTile* tile) const
 {
     float radius = world->ellipsoidAxes().minCoeff() * 0.5f;
-    Vector3f cameraPosition = (rc.modelview().inverse() * Vector4f::UnitW()).start<3>();
+    Vector3f cameraPosition = (rc.modelview().inverse() * Vector4f::UnitW()).head<3>();
     float distToCenter = rc.modelview().translation().norm();
     float altitude = max(1.0f, distToCenter - radius);
     float apparentSize = radius / altitude;

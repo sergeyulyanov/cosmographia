@@ -144,7 +144,7 @@ ParticleEmitter::generateParticles(double simulationTime,
         // inexpensively in a shader.
         if (m_colorCount < 2)
         {
-            particle.color = m_colorKeys[0].start<3>();
+            particle.color = m_colorKeys[0].head<3>();
             particle.opacity = m_colorKeys[0].w();
         }
         else
@@ -154,7 +154,7 @@ ParticleEmitter::generateParticles(double simulationTime,
             float t = s - colorIndex;
             Vector4f interpolatedColor = (1 - t) * m_colorKeys[colorIndex] + t * m_colorKeys[colorIndex + 1];
 
-            particle.color = interpolatedColor.start<3>();
+            particle.color = interpolatedColor.head<3>();
             particle.opacity = interpolatedColor.w();
         }
 

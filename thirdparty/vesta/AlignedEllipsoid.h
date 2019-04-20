@@ -47,7 +47,7 @@ public:
       */
     Eigen::Vector3d normal(const Eigen::Vector3d& v)
     {
-        return (m_semiAxes.cwise().square().cwise().inverse().asDiagonal() * v).normalized();
+        return (m_semiAxes.cwiseAbs2().cwiseInverse().asDiagonal() * v).normalized();
     }
 
     /** Get the length of the semi-major axis.
@@ -78,7 +78,7 @@ public:
                           cosLat * std::sin(c.longitude()),
                           std::sin(c.latitude()));
 
-        Eigen::Vector3d k = m_semiAxes.cwise().square().cwise() * n;
+        Eigen::Vector3d k = m_semiAxes.cwiseAbs2().cwiseProduct(n);
         double s = std::sqrt(k.dot(n));
 
         Eigen::Vector3d surfacePoint = k / s;

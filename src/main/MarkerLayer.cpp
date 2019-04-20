@@ -127,7 +127,7 @@ MarkerLayer::renderMarker(const Vector3d& viewerPosition,
 
     // Project the location of the body into normalized device coordinates
     Vector4d p;
-    p.start<3>() = cameraSpacePosition;
+    p.head<3>() = cameraSpacePosition;
     p.w() = 1.0;
     Vector4f ndc = projection.matrix() * p.cast<float>();
     bool showOutOfViewIndicator = false;

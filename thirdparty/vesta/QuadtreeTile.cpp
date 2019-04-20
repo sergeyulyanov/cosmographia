@@ -413,7 +413,7 @@ QuadtreeTile::tessellate(const Vector3f& eyePosition,
     // world is a sphere, but larger than the actual altitude for other ellipsoids.
     //float approxAltitude = abs(eyePosition.norm() - (eyePosition.normalized().cwise() * globeSemiAxes).norm());
     float distToCenter = eyePosition.norm();
-    float approxAltitude = abs(distToCenter - ((eyePosition.cwise() * globeSemiAxes).norm()) / max(1.0e-6f, distToCenter));
+    float approxAltitude = abs(distToCenter - ((eyePosition.cwiseProduct(globeSemiAxes)).norm()) / max(1.0e-6f, distToCenter));
 
     // Compute the approximate projected size of the tile.
     float distanceToTile = max(approxAltitude, (eyePosition - m_center).norm() - m_boundingSphereRadius);
@@ -1354,13 +1354,13 @@ QuadtreeTile::computeCenterAndRadius(const Vector3f& semiAxes)
     // Compute the center of the tile.
     float cosCenterLat = cos(latCenter);
     Vector3f unitCenter(cosCenterLat * cos(lonCenter), cosCenterLat * sin(lonCenter), sin(latCenter));
-    m_center = unitCenter.cwise() * semiAxes;
+    m_center = unitCenter.cwiseProduct(semiAxes);
 
     // Compute the radius of a sphere large enough to contain this tile
     float cornerLat = latSouth >= 0.0f ? latSouth : latSouth + tileArc;
     float cosCornerLat = cos(cornerLat);
     Vector3f corner(cosCornerLat * cos(lonWest), cosCornerLat * sin(lonWest), sin(cornerLat));
-    corner = corner.cwise() * semiAxes;
+    corner = corner.cwiseProduct(semiAxes);
     m_boundingSphereRadius = (corner - m_center).norm();
 }
 

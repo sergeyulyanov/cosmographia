@@ -67,13 +67,13 @@ VertexArray::computeBoundingBox() const
         if (m_count > 0)
         {
             // Initialize bounding box with first point
-            bbox = BoundingBox(Map<Vector3f>(floatData), Map<Vector3f>(floatData));
+            bbox = BoundingBox(Vector3f::Map(floatData), Vector3f::Map(floatData));
             floatData += step;
         }
 
         for (unsigned int i = 1; i < m_count; ++i)
         {
-            bbox.include(Map<Vector3f>(floatData));
+            bbox.include(Vector3f::Map(floatData));
             floatData += step;
         }
     }
@@ -96,7 +96,7 @@ VertexArray::computeBoundingSphereRadius() const
 
         for (unsigned int i = 0; i < m_count; ++i)
         {
-            maxDistSquared = std::max(maxDistSquared, Map<Vector3f>(floatData).squaredNorm());
+            maxDistSquared = std::max(maxDistSquared, Vector3f::Map(floatData).squaredNorm());
             floatData += step;
         }
     }
@@ -118,5 +118,5 @@ VertexArray::position(unsigned int index) const
     const float* floatData = reinterpret_cast<float*>(m_data) + m_vertexSpec.attributeOffset(positionIndex) / 4;
     unsigned int stride = m_stride / 4;
 
-    return Map<Vector3f>(floatData + stride * index);
+    return Vector3f::Map(floatData + stride * index);
 }

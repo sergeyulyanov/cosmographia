@@ -778,8 +778,8 @@ TextureFont::loadTxf(const DataChunk* data)
             return false;
         }
 
-        Vector2f normalizedSize = texelScale.cwise() * Vector2f(glyphWidth, glyphHeight);
-        Vector2f normalizedPosition = texelScale.cwise() * Vector2f(x, y) + halfTexel;
+        Vector2f normalizedSize = texelScale.cwiseProduct(Vector2f(glyphWidth, glyphHeight));
+        Vector2f normalizedPosition = texelScale.cwiseProduct(Vector2f(x, y)) + halfTexel;
 
         TextureFont::Glyph glyph;
         glyph.characterId = characterId;

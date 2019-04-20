@@ -190,7 +190,7 @@ WorldGeometry::render(RenderContext& rc, double clock) const
     float radius = maxRadius();
 
     // Get the position of the eye in model coordinates *before* scaling
-    Transform3f invModelView = Transform3f(rc.modelview().inverse());
+    Affine3f invModelView = Affine3f(rc.modelview().inverse());
     Vector3f eyePosition = invModelView * Vector3f::Zero();
 
     // Calculate the horizon distance; we'll just approximate this for non-spherical
@@ -419,7 +419,7 @@ WorldGeometry::render(RenderContext& rc, double clock) const
         // along a line through the center of the planet ellipsoid. This is correct
         // since the cloud geometry is drawn as a scaled ellipsoid rather than at
         // constant height above the planet.
-        float ellipDistance = (rc.modelTranslation().cast<float>().cwise() * (m_ellipsoidAxes * (0.5f / radius))).norm();
+        float ellipDistance = (rc.modelTranslation().cast<float>().cwiseProduct((m_ellipsoidAxes * (0.5f / radius))).norm());
         if (ellipDistance < m_cloudAltitude + radius)
         {
             glCullFace(GL_FRONT);

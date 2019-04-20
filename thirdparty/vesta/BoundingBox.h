@@ -55,19 +55,19 @@ class BoundingBox
 
         bool containsPoint(const Eigen::Vector3f& point)
         {
-            return (point.cwise() > m_minPoint).all() && (point.cwise() < m_maxPoint).all();
+            return (point.array() > m_minPoint.array()).all() && (point.array() < m_maxPoint.array()).all();
         }
 
         BoundingBox merged(const BoundingBox& other) const
         {
-            return BoundingBox(m_minPoint.cwise().min(other.m_minPoint),
-                               m_maxPoint.cwise().max(other.m_maxPoint));
+            return BoundingBox(m_minPoint.cwiseMin(other.m_minPoint),
+                               m_maxPoint.cwiseMax(other.m_maxPoint));
         }
 
         void include(const Eigen::Vector3f& point)
         {
-            m_minPoint = m_minPoint.cwise().min(point);
-            m_maxPoint = m_maxPoint.cwise().max(point);
+            m_minPoint = m_minPoint.cwiseMin(point);
+            m_maxPoint = m_maxPoint.cwiseMax(point);
         }
 
     private:

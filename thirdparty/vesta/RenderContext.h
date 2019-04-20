@@ -258,13 +258,13 @@ public:
     }
 
     /** Get the current modelview transformation */
-    const Eigen::Transform3f& modelview() const
+    const Eigen::Affine3f& modelview() const
     {
         return m_matrixStack[m_modelViewStackDepth];
     }
 
     /** Get the current projection transformation */
-    const Eigen::Transform3f& projection() const
+    const Eigen::Affine3f& projection() const
     {
         return m_projectionStack[m_projectionStackDepth];
     }
@@ -414,8 +414,8 @@ private:
 
     unsigned int m_modelViewStackDepth;
     unsigned int m_projectionStackDepth;
-    Eigen::Transform3f m_matrixStack[MaxMatrixStackDepth];
-    Eigen::Transform3f m_projectionStack[MaxMatrixStackDepth];
+    Eigen::Affine3f m_matrixStack[MaxMatrixStackDepth];
+    Eigen::Affine3f m_projectionStack[MaxMatrixStackDepth];
     Frustum m_frustumStack[MaxMatrixStackDepth];
     Eigen::Vector3d m_modelTranslation;
 

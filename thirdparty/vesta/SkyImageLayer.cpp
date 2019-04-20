@@ -58,7 +58,7 @@ SkyImageLayer::render(RenderContext& rc)
     rc.rotateModelView(m_orientation.cast<float>());
 
     // Get the position of the eye in model coordinates *before* scaling
-    Transform3f invModelView = Transform3f(rc.modelview().inverse());
+    Affine3f invModelView = Affine3f(rc.modelview().inverse());
     Vector3f eyePosition = invModelView * Vector3f::Zero();
 
     // Compute the culling planes. Use the horizon distance for the far plane in order

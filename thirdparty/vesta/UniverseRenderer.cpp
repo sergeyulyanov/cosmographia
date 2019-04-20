@@ -1667,7 +1667,7 @@ UniverseRenderer::renderDepthBufferSpanShadows(unsigned int shadowIndex,
     // at the center of the collection of mutually shadowing objects.
     Matrix4f invCameraTransform = m_renderContext->modelview().matrix().transpose();
     Matrix4f shadowTransform = setupShadowRendering(m_shadowMaps[shadowIndex].ptr(), lightDirection, shadowGroupBoundingRadius);
-    shadowTransform = shadowTransform * Transform3f(Translation3f(-shadowGroupCenter)).matrix() * invCameraTransform;
+    shadowTransform = shadowTransform * Affine3f(Translation3f(-shadowGroupCenter)).matrix() * invCameraTransform;
 
     // Render shadows for all casters
     for (unsigned int i = 0; i < span.itemCount; ++i)
@@ -1874,7 +1874,7 @@ UniverseRenderer::setupEclipseShadows(const VisibleItem &item)
             const EclipseShadowVolumeSet::EclipseShadowVector& shadows = m_eclipseShadows->intersectingShadows();
 
             unsigned int shadowCount = min((unsigned int) RenderContext::MaxEclipseShadows, (unsigned int) shadows.size());
-            Matrix4f invCameraTransform = Transform3f(m_renderContext->cameraOrientation()).matrix();
+            Matrix4f invCameraTransform = Affine3f(m_renderContext->cameraOrientation()).matrix();
 
             unsigned int ellipsoidShadowCount = 0;
             for (unsigned int i = 0; i < shadowCount; ++i)
@@ -1934,8 +1934,8 @@ UniverseRenderer::setupEclipseShadows(const VisibleItem &item)
                                        0.0f, 0.0f, 0.0f,                 1.0f;
 
                         Matrix4f shadowTransform = Matrix4f::Identity();
-                        shadowTransform.corner<3, 3>(TopLeft) = shadowRotation.transpose();
-                        shadowTransform = shadowShear * shadowTransform * Transform3f(Translation3f(-shadowCenter)).matrix() * invCameraTransform;
+                        shadowTransform.topLeftCorner(3, 3) = shadowRotation.transpose();
+                        shadowTransform = shadowShear * shadowTransform * Affine3f(Translation3f(-shadowCenter)).matrix() * invCameraTransform;
                         m_renderContext->setRingShadowMatrix(0, shadowTransform, rings->innerRadius() / rings->outerRadius());
                         m_renderContext->setRingShadowTexture(0, rings->texture());
 #ifdef VESTA_OGLES2
@@ -1974,8 +1974,8 @@ UniverseRenderer::setupEclipseShadows(const VisibleItem &item)
                                       shadow.direction.cast<float>() / zscale;
 
                     Matrix4f shadowTransform = Matrix4f::Identity();
-                    shadowTransform.corner<3, 3>(TopLeft) = shadowRotation.transpose();
-                    shadowTransform = shadowTransform * Transform3f(Translation3f(-shadowCenter)).matrix() * invCameraTransform;
+                    shadowTransform.topLeftCorner(3, 3) = shadowRotation.transpose();
+                    shadowTransform = shadowTransform * Affine3f(Translation3f(-shadowCenter)).matrix() * invCameraTransform;
                     zscale = 1.0f;
                     m_renderContext->setEclipseShadowMatrix(ellipsoidShadowCount, shadowTransform, shadow.umbraSlope / zscale, shadow.penumbraSlope / zscale);
 
