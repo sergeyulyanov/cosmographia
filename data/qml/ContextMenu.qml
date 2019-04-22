@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with Cosmographia. If not, see <http://www.gnu.org/licenses/>.
 
-import QtQuick 1.0
+import QtQuick 2.10
 import Cosmographia 1.0
 
 Item
@@ -207,7 +207,7 @@ Item
         spacing: 3
 
         interactive: false
-        highlightMoveSpeed: 5000
+        highlightMoveVelocity: 5000
 
         delegate: Item {
             id: menuItem

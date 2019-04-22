@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with Cosmographia. If not, see <http://www.gnu.org/licenses/>.
 
-import QtQuick 1.0
+import QtQuick 2.10
 import Cosmographia 1.0
 import "../addons.js" as AddonCatalog
 
@@ -60,7 +60,7 @@ ScrollablePane
         spacing: 10
 
         interactive: false
-        highlightMoveSpeed: 5000
+        highlightMoveVelocity: 5000
 
         delegate: Row {
             id: row

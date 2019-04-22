@@ -21,7 +21,7 @@
 #include "catalog/UniverseCatalog.h"
 #include "qtwrapper/BodyObject.h"
 #include "qtwrapper/VisualizerObject.h"
-#include <QDeclarativeView>
+#include <QQuickView>
 #include <QTimer>
 #include <QDateTime>
 #include <QGestureEvent>
@@ -56,7 +56,7 @@ namespace vesta
     class GlareOverlay;
 }
 
-class UniverseView : public QDeclarativeView
+class UniverseView : public QQuickView
 {
     Q_OBJECT
     Q_PROPERTY(double realTime READ realTime);
@@ -119,7 +119,7 @@ public:
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
-    UniverseView(QWidget *parent, vesta::Universe* universe, UniverseCatalog* catalog);
+    UniverseView(QWindow *parent, vesta::Universe* universe, UniverseCatalog* catalog);
     ~UniverseView();
 
     void initializeDeclarativeUi(const QString& qmlFileName);
@@ -356,6 +356,10 @@ public slots:
 
 private slots:
     void setFOV(double fovY);
+    void initializeUnderlay();
+    void synchronizeUnderlay();
+    void renderUnderlay();
+    void invalidateUnderlay();
 
 protected:
     void paintGL();
@@ -371,6 +375,7 @@ protected:
     void paintEvent(QPaintEvent* event);
     void focusOutEvent(QFocusEvent* event);
     void focusInEvent(QFocusEvent* event);
+    void resizeEvent(QResizeEvent* event);
     bool event(QEvent* event);
 
 private:

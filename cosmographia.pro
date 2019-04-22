@@ -7,7 +7,7 @@ OBJECTS_DIR = obj
 
 QT += opengl
 QT += network
-QT += declarative
+QT += quick
 
 
 #### App sources ####
@@ -647,7 +647,8 @@ win32-g++ {
 }
 
 win32 {
-    DEFINES += NOMINMAX
+    DEFINES += NOMINMAX _USE_MATH_DEFINES
+    LIBS += -lopengl32 -lglu32
 }
 
 win32-msvc2008|win32-msvc2010 {

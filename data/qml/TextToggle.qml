@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU Lesser General Public
 // License along with Cosmographia. If not, see <http://www.gnu.org/licenses/>.
 
-import QtQuick 1.0
+import QtQuick 2.10
 
 Text {
     id: toggle

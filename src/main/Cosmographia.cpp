@@ -71,9 +71,9 @@
 #include <QDesktopServices>
 #include <QNetworkDiskCache>
 #include <QNetworkRequest>
-#include <QDeclarativeEngine>
-#include <QDeclarativeComponent>
-#include <QDeclarativeContext>
+#include <QQmlEngine>
+#include <QQmlComponent>
+#include <QQmlContext>
 
 using namespace vesta;
 using namespace Eigen;
@@ -106,8 +106,10 @@ Cosmographia::Cosmographia() :
     initializeUniverse();
 
     m_catalog = new UniverseCatalog();
-    m_view3d = new UniverseView(this, m_universe.ptr(), m_catalog);
+    m_view3d = new UniverseView(nullptr, m_universe.ptr(), m_catalog);
     m_loader = new UniverseLoader();
+
+    connect(m_view3d, SIGNAL(sceneGraphInitialized()), SLOT(initialize()));
 
     loadStarNamesFile("starnames.json", m_universe->starCatalog());
 
@@ -128,7 +130,7 @@ Cosmographia::Cosmographia() :
     m_view3d->rootContext()->setContextProperty("universeCatalog", m_catalogWrapper);
     m_view3d->rootContext()->setContextProperty("helpCatalog", m_helpCatalog);
 
-    setCentralWidget(m_view3d);
+    setCentralWidget(createWindowContainer(m_view3d));
 
     setWindowTitle(tr("Cosmographia"));
 
